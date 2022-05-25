@@ -14,7 +14,7 @@ log = logging.getLogger('apples')
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 
 # this is the input sequence (apple types)
-seq = [2, 2, 1, 2, 1, 2, 1, 1, 2, 2, 3, 3, 1, 3, 5, 3, 4, 4, 2, 5, 3, 5, 2, 3, 4, 5, 5,4,5,5,4,4,4,4,5,5,5,4,4,8,4,8,4,5]
+seq = [2,1,2,3,3,1,3,5,2, 2, 1, 2, 1, 2, 1, 1, 2, 2, 3, 3, 1, 3, 5, 3, 4, 4, 2, 5, 3, 5, 2, 3, 4, 5, 5,4,5,5,4,4,4,4,5,5,5,4,4]
 #seq = [2, 1, 2, 3, 3, 1, 3, 5]
 
 # split it to sequences of the same numbers
@@ -46,33 +46,46 @@ def is_larger(largest,stack,cur):
         pprint(largest)
     return largest
 
+def is_larger2(largest,tmpsum,cur):
+    ts = tmpsum+cur['l']
+    if ts > largest:
+        largest = ts
+        print("largest ",largest)
+    return largest
 
 
-def apples_stack():
+def apples_stack2():
     global sums
     stack = []
-    largest = {'length': -1}
+    largest = -1
     sums = iter(sums)
-    stack.append(next(sums)) # first run on the stack
+
+    b = next(sums) # on stack
+    tmpsum = b['l'] # here we sum
+    last_a = b['a'] # here we keep the last apple
+
     cur = next(sums) # next one is current
     
     for n in sums:  
-        print("stck:",stack," cur:",cur," n:",n)
-        if n['a'] == cur['a'] or n['a'] == stack[-1]['a']: # we continue the run
-            stack.append(cur) # push current on the stack
+        #print("stck:",stack," cur:",cur," n:",n)
+        print("tmpsum",tmpsum,"last_a",last_a,"cur",cur,"n",n)
+        if n['a'] == cur['a'] or n['a'] == last_a: # we continue the run
+            tmpsum += cur['l']
+            last_a = cur['a']
             cur = n           # new is the next current
         else: 
             # the new run starts with 'cur'
-            largest = is_larger(largest,stack,cur)
-            stack=[cur] # the current is already part of the next run
+            largest = is_larger2(largest,tmpsum,cur)
+            tmpsum=cur['l'] # the current is already part of the next run
+            last_a=cur['a']
             cur = n # and this is the second one
 
     # now check the last run
-    largest = is_larger(largest,stack,cur)
+    largest = is_larger2(largest,tmpsum,cur)
     return largest
 
 
 if __name__ == '__main__':
-    largest = apples_stack()
-    print(largest['length'])
+    largest = apples_stack2()
+    print(largest)
 
